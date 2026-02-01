@@ -281,7 +281,7 @@ output_video.mp4  # Annotated video with detections
 
 ```bash
 # Clone repository
-git clone <repo-url>
+git clone https://github.com/tumblr-byte/Helmet_Detection.git
 
 # Install CRNN dependencies
 cd CRNN
@@ -301,3 +301,4 @@ MIT License
 ---
 
 **Note:** Experimental project demonstrating CV concepts. Helmet detection uses simplified person-to-bike association for proof-of-concept.
+
