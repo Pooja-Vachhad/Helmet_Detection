@@ -173,7 +173,7 @@ Multi-model pipeline for automated helmet violation detection.
 - Number plate OCR
 
 **Details:**
-- Detection: YOLOv26
+- Detection: YOLO26
 - Tracking: DeepSort
 - OCR: Custom CRNN
 - Classes: Bike, person with/without helmet, number plate
@@ -304,6 +304,7 @@ MIT License
 ---
 
 **Note:** Experimental project demonstrating CV concepts. Helmet detection uses simplified person-to-bike association for proof-of-concept.
+
 
 
 
