@@ -192,16 +192,19 @@ https://github.com/user-attachments/assets/2aa6d687-b74e-4ff5-8e17-5e39de326599
 **Violation Detection:**
 
 *Person without helmet detection and tracking*
+
 https://github.com/user-attachments/assets/db516259-7eb5-4f41-aa45-266745295474
 
 **Number Plate OCR:**
 
 *Real-time number plate recognition*
+
 https://github.com/user-attachments/assets/cbb0f611-3eeb-4699-9056-3b41027f4f34
 
 **System Output:**
 
 *Evidence collection: bike, person, and number plate crops*
+
 https://github.com/user-attachments/assets/4b7eb1f3-a312-4947-afcb-591380df35b8
 
 **Files:**
@@ -301,4 +304,5 @@ MIT License
 ---
 
 **Note:** Experimental project demonstrating CV concepts. Helmet detection uses simplified person-to-bike association for proof-of-concept.
+
 
