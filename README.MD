@@ -250,7 +250,7 @@ output_video.mp4  # Annotated video with detections
 - Data augmentation strategies
 - Multi-model integration
 - Domain adaptation importance
-- Model deployment (ONNX)
+- ONNX
 
 ---
 
