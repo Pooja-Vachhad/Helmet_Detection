@@ -65,69 +65,22 @@ Two interconnected computer vision projects demonstrating end-to-end ML pipeline
                     └──────────────────┘
 ```
 
----
-
-## CRNN Architecture
-
-```
-Input Image (3, 100, 200)
-         │
-         ▼
-┌─────────────────┐
-│   CNN Blocks    │  ← Feature Extraction
-│   3 → 64 → 128  │     • 3 Conv blocks
-│   → 256         │     • BatchNorm + ReLU
-└─────────────────┘     • MaxPooling
-         │
-         ▼
-┌─────────────────┐
-│ Reshape to      │  ← Prepare for sequence
-│ (B, T, C*H)     │     
-└─────────────────┘
-         │
-         ▼
-┌─────────────────┐
-│  FC Layer       │  ← Dimension reduction
-│  256*H → 128    │     + Dropout (0.5)
-└─────────────────┘
-         │
-         ▼
-┌─────────────────┐
-│ Bidirectional   │  ← Sequence modeling
-│ LSTM (2 layers) │     • Hidden: 128
-│                 │     • Dropout: 0.3
-└─────────────────┘
-         │
-         ▼
-┌─────────────────┐
-│  Classifier     │  ← Character prediction
-│  256 → 63 chars │     (a-z, A-Z, 0-9 + blank)
-└─────────────────┘
-         │
-         ▼
-   CTC Decoding
-         │
-         ▼
-   Output Text
-```
-
----
 
 ## Projects
 
 ### 1. CRNN Number Plate Recognition (Experimental)
 
-Custom CRNN architecture for number plate OCR.
+Custom CRNN pipeline for number plate OCR, using a pretrained ResNet-18 backbone (through layer3) with a custom Bi-LSTM + CTC head.
 
 **Features:**
-- Custom CNN-RNN architecture 
+- ResNet-18 backbone (pretrained, fine-tuned) + custom Bi- LSTM/CTC head
 - CTC loss for variable-length sequences
-- Data augmentation
+- Targeted blur/motion/compression data augmentation
 - ONNX export for deployment
 
 **Details:**
 - Dataset: 456 clean number plate images
-- Architecture: 3 CNN blocks + Bi-LSTM + CTC
+- Architecture:  ResNet-18(conv1 -> layer2) + Bi-LSTM + CTC 
 - Input: 100x200 RGB images
 - Output: Alphanumeric text (a-z, A-Z, 0-9)
 
