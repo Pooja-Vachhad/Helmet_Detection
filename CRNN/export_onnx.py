@@ -3,10 +3,12 @@ import onnx
 import onnxruntime as ort
 import os
 import string
-from torchvision import transforms
+import numpy as np
+import albumentations as A
+from albumentations.pytorch import ToTensorV2
 from PIL import Image
 import matplotlib.pyplot as plt
-from model import CRNN
+from model import model , device
 
 CHARS = string.ascii_lowercase + string.ascii_uppercase + string.digits
 char_to_int = {char: idx + 1 for idx, char in enumerate(CHARS)}
