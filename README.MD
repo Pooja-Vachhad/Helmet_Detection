@@ -133,7 +133,7 @@ Custom CRNN architecture for number plate OCR.
 
 **Results:**
 - Tested on blurred images
-- 56% character accuracy on blur (trained on clean data)
+- 68% character accuracy 
 - Demonstrates domain adaptation challenge
 
 **Prediction Results:**
@@ -241,7 +241,9 @@ output_video.mp4  # Annotated video with detections
 - ONNX deployment ready
 
 ### Challenges:
-- Domain shift (clean to blur) reduces accuracy
+
+- Domain shift (clean to blur) - addressed via targeted blur/motion augmentation (Albumenations: MotionBlur, GaussianBlur,
+ImageCompression) , improving character accuracy on blurred plates from 56% to 68%
 - Small dataset (456 images) limits generalization
 - Person-to-bike association needs spatial logic
 
