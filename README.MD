@@ -80,7 +80,7 @@ Custom CRNN pipeline for number plate OCR, using a pretrained ResNet-18 backbone
 
 **Details:**
 - Dataset: 456 clean number plate images
-- Architecture:  ResNet-18(conv1 -> layer2) + Bi-LSTM + CTC 
+- Architecture:  ResNet-18(conv1 -> layer3) + Bi-LSTM + CTC 
 - Input: 100x200 RGB images
 - Output: Alphanumeric text (a-z, A-Z, 0-9)
 
