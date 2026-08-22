@@ -1,6 +1,7 @@
 """
-CRNN (Convolutional Recurrent Neural Network) Architecture
-Built from scratch for number plate recognition using CTC loss
+CRNN (Convolutional Recurrent Neural Network) for number plate recongition.
+Uses a pretrained ResNet-18 (through layer3) as the CNN feature extractor,
+paired with a custom Bi-LSTM sequence head and CTC loss for variable-length alphanumeric text recongition.
 """
 
 from torchvision import models
