@@ -6,7 +6,7 @@ Two interconnected computer vision projects demonstrating end-to-end ML pipeline
 
 ## Project Overview
 
-1. **CRNN Number Plate Recognition** - Custom OCR model built from scratch
+1. **CRNN Number Plate Recognition** - Custom OCR pipeline (pretrained ResNet-18 + Bi-LSTM/CTC) for number plate recognition
 2. **Helmet Detection System** - Real-time violation detection using multi-model pipeline
 
 ---
@@ -51,7 +51,7 @@ Two interconnected computer vision projects demonstrating end-to-end ML pipeline
                               ▼
               ┌───────────────────────────────┐
               │   CRNN OCR Model              │
-              │   (Custom Architecture)       │
+              │   (pretrained ResNet-18 + Bi-LSTM/CTC)       │
               └───────────────────────────────┘
                               │
                               ▼
@@ -79,7 +79,7 @@ Custom CRNN pipeline for number plate OCR, using a pretrained ResNet-18 backbone
 - ONNX export for deployment
 
 **Details:**
-- Dataset: 456 clean number plate images
+- Dataset: 456 number plate images
 - Architecture:  ResNet-18(conv1 -> layer3) + Bi-LSTM + CTC 
 - Input: 100x200 RGB images
 - Output: Alphanumeric text (a-z, A-Z, 0-9)
@@ -188,15 +188,14 @@ output_video.mp4  # Annotated video with detections
 ## Results & Learnings
 
 ### What Worked:
-- Custom CRNN learns clean data effectively
+- Domain shift (clean to blur) - addressed via targeted blur/motion augmentation (Albumentations: MotionBlur, GaussianBlur,
+ImageCompression) , a pretrained ResNet-18 backbone , and extended training (100+ epochs with early stopping), improving character accuracy on blurred plates from 56% to 68%
 - Multi-model pipeline integration
 - DeepSort maintains bike IDs across frames
 - ONNX deployment ready
 
 ### Challenges:
 
-- Domain shift (clean to blur) - addressed via targeted blur/motion augmentation (Albumentations: MotionBlur, GaussianBlur,
-ImageCompression) , a pretrained ResNet-18 backbone , and extended training (100+ epochs with early stopping), improving character accuracy on blurred plates from 56% to 68%
 - Small dataset (456 images) limits generalization
 - Person-to-bike association needs spatial logic
 
@@ -214,7 +213,7 @@ ImageCompression) , a pretrained ResNet-18 backbone , and extended training (100
 | Category | Technologies |
 |----------|-------------|
 | **Deep Learning** | PyTorch, ONNX Runtime, Ultralytics YOLO |
-| **Computer Vision** | OpenCV, PIL, torchvision |
+| **Computer Vision** | OpenCV, PIL, torchvision , Albumentations|
 | **Tracking** | DeepSort |
 | **ML Tools** | scikit-learn, NumPy, matplotlib |
 
@@ -223,7 +222,6 @@ ImageCompression) , a pretrained ResNet-18 backbone , and extended training (100
 ## Future Improvements
 
 **CRNN:**
-- Train on blurred data for robustness
 - Larger dataset (1000+ images)
 - Attention mechanisms
 - Confidence scores
