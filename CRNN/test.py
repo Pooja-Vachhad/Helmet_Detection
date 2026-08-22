@@ -1,27 +1,34 @@
 """
 Testing Script for CRNN Number Plate Recognition
-Visualizes predictions on test images
+Visualizes predictions on test image
 """
-
-import os
+import numpy as np
 import torch
-import matplotlib.pyplot as plt
+import torch.nn as nn
+import os
+import albumentations as A
+from albumentations.pytorch import ToTensorV2
 import string
-from torchvision import transforms
-from PIL import Image
-
-from model import CRNN
+import cv2
+import matplotlib.pyplot as plt
 
 CHARS = string.ascii_lowercase + string.ascii_uppercase + string.digits
-char_to_int = {char: idx + 1 for idx, char in enumerate(CHARS)}
-int_to_char = {idx: char for char, idx in char_to_int.items()}
+char_to_int = {char:idx + 1 for idx , char in enumerate(CHARS)}
+int_to_char = {idx:char for char , idx in char_to_int.items()}
 num_classes = len(CHARS) + 1
 
-# Decode CTC output logits to readable text
+valid_transforms = A.Compose([
+    A.Resize(100 , 200),
+    A.Normalize(mean = (0.485 , 0.456 , 0.406) , std = (0.229 , 0.224 , 0.224)),
+    ToTensorV2(),
+
+])
+
+# Greedy CTC decoding: take argmax per time step, then collapse consecutive
+# repeated characters and drop blank token (index 0)
 def ctc_decode(logits, int_to_char):
     max_probs = torch.argmax(logits, dim=2)
     decoded_strings = []
-
     for seq in max_probs:
         prev = -1
         decoded = []
@@ -31,55 +38,55 @@ def ctc_decode(logits, int_to_char):
                 decoded.append(int_to_char[idx])
             prev = idx
         decoded_strings.append("".join(decoded))
-
     return decoded_strings
 
 
-test_transforms = transforms.Compose([
-    transforms.Resize((100, 200)),
-    transforms.ToTensor(),
-    transforms.Normalize(
-        mean=(0.42, 0.43, 0.41),
-        std=(0.32, 0.32, 0.32)
-    )
-])
+# Reverses Normalize so images display correctly
+def denormalize(img_tensor , mean= (0.485 , 0.456 , 0.406) , std= (0.229 , 0.224 , 0.225)):
+    img = img_tensor.permute(1 , 2 , 0).cpu().numpy()  #CHW -> HWC
+    img = (img * std) + mean 
+    img = np.clip(img , 0 , 1) 
+    return img
+
+def visualize(model , test_loader  , int_to_char , device , num_img=5):
+   model.eval()
+   images_shown = 0
+   fig , axes = plt.subplots(1 , num_img , figsize= (num_img * 3 ,3))
+   if num_img == 1:
+     axes = [axes]
+   correct = 0
+   total = 0
+
+   with torch.no_grad():
+     for images ,labels_concat , label_length in test_loader:
+       images = images.to(device)
+       outputs = model(images)
+       label_lengths = label_length.tolist()
+       #split the flat concatenated labels back into per-sample labels
+       labels_split = torch.split(labels_concat , label_lengths)
+
+       for i in range(images.size(0)):
+         pred_text = ctc_decode(outputs[i].unsqueeze(0) , int_to_char)[0]
+         true_text = "".join([int_to_char[idx.item()] for idx in labels_split[i]])
+         total += 1
+         if pred_text == true_text:
+           correct += 1
+         if images_shown < num_img:
+           img_display = denormalize(images[i])
+           axes[images_shown].imshow(img_display)
+           axes[images_shown].set_title(f" GT: {true_text} \nPred: {pred_text}")
+           axes[images_shown].axis("off")
+           images_shown +=1
 
 
-# Test the model on images and visualize predictions
-def test_model(model, test_folder, test_transforms, model_path, int_to_char, num_images=8, device="cuda"):
-    model.load_state_dict(torch.load(model_path, map_location=device))
-    model.to(device)
-    model.eval()
+   plt.tight_layout()
+   plt.show()
 
-    image_list = [os.path.join(test_folder, img) for img in os.listdir(test_folder)]
+   accuracy = correct/total  * 100
+   print(f"accuracy on test set: {accuracy:.2f}")
+   return accuracy
 
-    fig, axes = plt.subplots(2, 4, figsize=(15, 8))
-    axes = axes.flatten()
+model.load_state_dict(torch.load("best_model.pth"))
+visualize(model , test_loader , int_to_char , device ,num_img= 5)
 
-    for i in range(min(num_images, len(image_list))):
-        image = Image.open(image_list[i]).convert("RGB")
-        img_display = image.copy()
 
-        img_tensor = test_transforms(image)\
-                   .unsqueeze(0)\
-                    .to(device)
-
-        with torch.no_grad():
-            output = model(img_tensor)  
-
-        pred = ctc_decode(output, int_to_char)[0]
-
-        axes[i].imshow(img_display)
-        axes[i].axis("off")
-        axes[i].set_title(f"Pred: {pred}")
-
-    plt.tight_layout()
-    plt.show()
-
-# Path to the test images folder
-test_folder = ""
-
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-model = CRNN(H=100, W=200, num_classes=num_classes).to(device)
-
-test_model(model=model, test_folder=test_folder, test_transforms=test_transforms, model_path="best_model.pth", int_to_char=int_to_char, num_images=8, device=device)
