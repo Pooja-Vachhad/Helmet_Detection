@@ -28,13 +28,11 @@ def ctc_decode(logits, int_to_char):
         decoded_strings.append("".join(decoded))
     return decoded_strings
 
-test_transforms = transforms.Compose([
-    transforms.Resize((100, 200)),
-    transforms.ToTensor(),
-    transforms.Normalize(
-        mean=(0.42, 0.43, 0.41),
-        std=(0.32, 0.32, 0.32)
-    )
+valid_transforms = A.Compose([
+    A.Resize(100 , 200),
+    A.Normalize(mean = (0.485 , 0.456 , 0.406) , std = (0.229 , 0.224 , 0.224)),
+    ToTensorV2(),
+
 ])
 
 # Export PyTorch model to ONNX format
@@ -53,7 +51,7 @@ def export_to_onnx_legacy(model, model_path, onnx_path="crnn_model.onnx", input_
             dummy_input,
             onnx_path,
             export_params=True,
-            opset_version=14,
+            opset_version=17,
             do_constant_folding=True,
             input_names=['input'],
             output_names=['output'],
@@ -78,21 +76,25 @@ onnx.checker.check_model(onnx_model)
 print("ONNX model is valid!")
 
 # Run inference on a test image using the ONNX model
-def test_onnx_inference(onnx_path, test_image_path, test_transforms, int_to_char):
-    ort_session = ort.InferenceSession(onnx_path)
-    image = Image.open(test_image_path).convert("RGB")
-    img_tensor = test_transforms(image).unsqueeze(0).cpu().numpy()
-    ort_inputs = {ort_session.get_inputs()[0].name: img_tensor}
-    ort_outputs = ort_session.run(None, ort_inputs)
-    output_tensor = torch.tensor(ort_outputs[0])
-    pred = ctc_decode(output_tensor, int_to_char)[0]
-    print(f"ONNX Prediction: {pred}")
-    plt.imshow(image)
-    plt.title(f"Prediction: {pred}")
-    plt.axis('off')
-    plt.show()
-    return pred
+def test(onnx_path , image_path , transforms , in_to_char):
+   ort_session = ort.InferenceSession(onnx_path)
+   input_name = ort_session.get_inputs()[0].name
+   image = Image.open(image_path).convert("RGB")
+   image_np = np.array(image)
+   image_tensor = transforms(image= image_np)["image"]
+   img_tensor = image_tensor.unsqueeze(0).cpu().numpy()
+   ort_inputs = {input_name:img_tensor}
+   ort_outputs = ort_session.run(None, ort_inputs)
+   output_tensor = torch.tensor(ort_outputs[0])
+   pred = ctc_decode(output_tensor , int_to_char)[0]
+   print(f"Predicted:{pred}")
 
-test_folder = ""
-test_image = os.path.join(test_folder, os.listdir(test_folder)[1])
-test_onnx_inference("crnn_model.onnx", test_image, test_transforms, int_to_char)
+   plt.imshow(image)
+   plt.title(f"Prediction: {pred}")
+   plt.axis("off")
+   plt.show()
+   return pred
+
+
+image_path = "path of the test image"
+pred = test("crnn_model.onnx", image_path, valid_transforms, int_to_char)
