@@ -1,9 +1,10 @@
 import string
 import torch
-from torchvision.transforms import transforms
-from PIL import Image
+import albumentations as A
+from albumentations.pytorch import ToTensorV2
 import cv2
 import os
+import numpy as np
 import datetime
 from ultralytics import YOLO
 import onnxruntime as ort
@@ -38,10 +39,11 @@ char_to_int = {char: idx + 1 for idx, char in enumerate(CHARS)}
 int_to_char = {idx: char for char, idx in char_to_int.items()}
 
 # Image transforms for CRNN
-test_transforms = transforms.Compose([
-    transforms.Resize((100, 200)),
-    transforms.ToTensor(),
-    transforms.Normalize(mean=(0.42, 0.43, 0.41), std=(0.32, 0.32, 0.32))
+test_transforms = A.Compose([
+    A.Resize(100 , 200),
+    A.Normalize(mean = (0.485 , 0.456 , 0.406) , std = (0.229 , 0.224 , 0.224)),
+    ToTensorV2(),
+
 ])
 
 
@@ -67,8 +69,8 @@ def ctc_decode(logits, int_to_char):
 def run_ocr(crnn_session, image_array, test_transforms, int_to_char):
     """Run OCR on number plate crop"""
     image_rgb = cv2.cvtColor(image_array, cv2.COLOR_BGR2RGB)
-    image_pil = Image.fromarray(image_rgb)
-    img_tensor = test_transforms(image_pil).unsqueeze(0).cpu().numpy()
+    img_tensor = test_transforms(image = image_rgb)["image"]
+    img_tensor = img_tensor.unqueeze(0).cpu().numpy()
     
     ort_inputs = {crnn_session.get_inputs()[0].name: img_tensor}
     ort_outputs = crnn_session.run(None, ort_inputs)
