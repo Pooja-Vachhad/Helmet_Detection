@@ -85,9 +85,9 @@ Custom CRNN pipeline for number plate OCR, using a pretrained ResNet-18 backbone
 - Output: Alphanumeric text (a-z, A-Z, 0-9)
 
 **Results:**
-- Tested on blurred images
-- 68% character accuracy 
-- Demonstrates domain adaptation challenge
+- Identified a domain-shift problem: model trained only on clean images performed poorly on real-world blurred plates (56% character accuracy on blur)
+- Retrained with targeted blur/motion/compression augmentation, a pretrained ResNet-18 backbone, and extended training (100+ epochs with early stopping)
+- **Improved character accuracy on blurred test images from 56% → 68%**
 
 **Prediction Results:**
 
@@ -195,8 +195,8 @@ output_video.mp4  # Annotated video with detections
 
 ### Challenges:
 
-- Domain shift (clean to blur) - addressed via targeted blur/motion augmentation (Albumenations: MotionBlur, GaussianBlur,
-ImageCompression) , improving character accuracy on blurred plates from 56% to 68%
+- Domain shift (clean to blur) - addressed via targeted blur/motion augmentation (Albumentations: MotionBlur, GaussianBlur,
+ImageCompression) , a pretrained ResNet-18 backbone , and extended training (100+ epochs with early stopping), improving character accuracy on blurred plates from 56% to 68%
 - Small dataset (456 images) limits generalization
 - Person-to-bike association needs spatial logic
 
