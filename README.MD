@@ -189,7 +189,7 @@ output_video.mp4  # Annotated video with detections
 
 ### What Worked:
 - Domain shift (clean to blur) - addressed via targeted blur/motion augmentation (Albumentations: MotionBlur, GaussianBlur,
-ImageCompression) , a pretrained ResNet-18 backbone , and extended training (100+ epochs with early stopping), improving character accuracy on blurred plates from 56% to 68%
+ImageCompression) , a pretrained ResNet-18 backbone , improving character accuracy on blurred plates from 56% to 68%
 - Multi-model pipeline integration
 - DeepSort maintains bike IDs across frames
 - ONNX deployment ready
