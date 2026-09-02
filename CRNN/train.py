@@ -116,7 +116,7 @@ valid_loader = DataLoader(valid_dataset , batch_size = 8 , shuffle = False , col
 test_loader = DataLoader(test_dataset , batch_size = 2 , shuffle = False , collate_fn = ctc_collate , num_workers = 2 , pin_memory = True)
 
 # Train and validate the model with early stopping
-def run_model(model, criterion, optimizer, train_loader, valid_loader,scheduler , num_epochs=200, patience=10, device="cuda", output_file="best_model.pth"):
+def run_model(model, criterion, optimizer, train_loader, valid_loader,scheduler , num_epochs=100, patience=10, device="cuda", output_file="best_model.pth"):
     train_losses = []
     valid_losses = []
     best_valid_loss = np.inf
@@ -218,4 +218,4 @@ optimizer = torch.optim.RMSprop(model.parameters(), lr=1e-4, alpha=0.9, momentum
 
 scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer , mode= "min" , factor = 0.5 , patience = 3)
 # Start training
-train_losses, valid_losses = run_model(model, criterion, optimizer, train_loader, valid_loader, scheduler ,num_epochs=200, patience=10, device=device, output_file="best_model.pth")
+train_losses, valid_losses = run_model(model, criterion, optimizer, train_loader, valid_loader, scheduler ,num_epochs=100, patience=10, device=device, output_file="best_model.pth")
