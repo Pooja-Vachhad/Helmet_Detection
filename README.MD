@@ -86,7 +86,7 @@ Custom CRNN pipeline for number plate OCR, using a pretrained ResNet-18 backbone
 
 **Results:**
 - Identified a domain-shift problem: model trained only on clean images performed poorly on real-world blurred plates (56% character accuracy on blur)
-- Retrained with targeted blur/motion/compression augmentation, a pretrained ResNet-18 backbone, and extended training (100+ epochs with early stopping)
+- Retrained with targeted blur/motion/compression augmentation, a pretrained ResNet-18 backbone.
 - **Improved character accuracy on blurred test images from 56% → 68%**
 
 **Prediction Results:**
