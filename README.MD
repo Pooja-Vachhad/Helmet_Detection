@@ -256,8 +256,6 @@ MIT License
 
 ---
 
-**Note:** Experimental project demonstrating CV concepts. Helmet detection uses simplified person-to-bike association for proof-of-concept.
-
 
 
 
