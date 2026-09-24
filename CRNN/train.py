@@ -59,7 +59,7 @@ class Custom(Dataset):
      self.char_to_int = char_to_int
 
      files = [f for f in os.listdir(folder_path) if f.endswith((".jpeg" , ".png" , ".jpg"))]
-     random.shuffle(files)
+     random.Random(42).shuffle(files)
      n= len(files)
 
      train_end = int(0.8 * n)
