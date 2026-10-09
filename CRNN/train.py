@@ -112,8 +112,8 @@ valid_dataset = Custom(folder_path , "valid" , char_to_int , valid_transforms)
 test_dataset = Custom(folder_path , "test" , char_to_int  , valid_transforms)
 
 train_loader = DataLoader(train_dataset , batch_size = 16 , shuffle= True , collate_fn = ctc_collate, num_workers = 2 , pin_memory = True)
-valid_loader = DataLoader(valid_dataset , batch_size = 8 , shuffle = False , collate_fn= ctc_collate , num_workers = 2 , pin_memory = True)
-test_loader = DataLoader(test_dataset , batch_size = 2 , shuffle = False , collate_fn = ctc_collate , num_workers = 2 , pin_memory = True)
+valid_loader = DataLoader(valid_dataset , batch_size = 8 , shuffle = False , collate_fn= ctc_collate )
+test_loader = DataLoader(test_dataset , batch_size = 2 , shuffle = False , collate_fn = ctc_collate )
 
 # Train and validate the model with early stopping
 def run_model(model, criterion, optimizer, train_loader, valid_loader,scheduler , num_epochs=100, patience=10, device="cuda", output_file="best_model.pth"):
